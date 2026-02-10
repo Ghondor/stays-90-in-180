@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap");
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --color-background: oklch(0.98 0.005 75);
+  --color-foreground: oklch(0.15 0.01 75);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.15 0.01 75);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.15 0.01 75);
+  --color-primary: oklch(0.55 0.17 40);
+  --color-primary-foreground: oklch(0.98 0.005 75);
+  --color-secondary: oklch(0.93 0.01 75);
+  --color-secondary-foreground: oklch(0.25 0.01 75);
+  --color-muted: oklch(0.93 0.01 75);
+  --color-muted-foreground: oklch(0.5 0.01 75);
+  --color-accent: oklch(0.93 0.01 75);
+  --color-accent-foreground: oklch(0.25 0.01 75);
+  --color-destructive: oklch(0.5 0.2 25);
+  --color-destructive-foreground: oklch(0.98 0.005 75);
+  --color-border: oklch(0.88 0.01 75);
+  --color-input: oklch(0.88 0.01 75);
+  --color-ring: oklch(0.55 0.17 40);
+  --radius: 0.625rem;
+
+  --color-sidebar: oklch(0.97 0.005 75);
+  --color-sidebar-foreground: oklch(0.25 0.01 75);
+  --color-sidebar-border: oklch(0.88 0.01 75);
+  --color-sidebar-accent: oklch(0.93 0.01 75);
+  --color-sidebar-accent-foreground: oklch(0.25 0.01 75);
+  --color-sidebar-ring: oklch(0.55 0.17 40);
+
+  --color-success: oklch(0.52 0.17 145);
+  --color-warning: oklch(0.65 0.18 60);
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme inline {
+    --color-background: oklch(0.15 0.01 75);
+    --color-foreground: oklch(0.96 0.005 75);
+    --color-card: oklch(0.2 0.01 75);
+    --color-card-foreground: oklch(0.96 0.005 75);
+    --color-popover: oklch(0.2 0.01 75);
+    --color-popover-foreground: oklch(0.96 0.005 75);
+    --color-primary: oklch(0.65 0.2 40);
+    --color-primary-foreground: oklch(0.15 0.01 75);
+    --color-secondary: oklch(0.25 0.01 75);
+    --color-secondary-foreground: oklch(0.96 0.005 75);
+    --color-muted: oklch(0.25 0.01 75);
+    --color-muted-foreground: oklch(0.65 0.01 75);
+    --color-accent: oklch(0.25 0.01 75);
+    --color-accent-foreground: oklch(0.96 0.005 75);
+    --color-destructive: oklch(0.6 0.2 25);
+    --color-destructive-foreground: oklch(0.96 0.005 75);
+    --color-border: oklch(0.3 0.01 75);
+    --color-input: oklch(0.3 0.01 75);
+    --color-ring: oklch(0.65 0.2 40);
+
+    --color-sidebar: oklch(0.17 0.01 75);
+    --color-sidebar-foreground: oklch(0.96 0.005 75);
+    --color-sidebar-border: oklch(0.3 0.01 75);
+    --color-sidebar-accent: oklch(0.25 0.01 75);
+    --color-sidebar-accent-foreground: oklch(0.96 0.005 75);
+    --color-sidebar-ring: oklch(0.65 0.2 40);
+
+    --color-success: oklch(0.65 0.2 145);
+    --color-warning: oklch(0.7 0.18 60);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--color-border);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
