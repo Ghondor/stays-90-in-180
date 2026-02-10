@@ -20,8 +20,8 @@ import type { Stay } from "@/lib/rule90-180";
 const staySchema = z
   .object({
     country: z.string().min(1, "Please select a country."),
-    entryDate: z.date({ required_error: "Please pick an entry date." }),
-    exitDate: z.date({ required_error: "Please pick an exit date." }),
+    entryDate: z.date({ error: "Please pick an entry date." }),
+    exitDate: z.date({ error: "Please pick an exit date." }),
   })
   .refine((data) => data.exitDate >= data.entryDate, {
     message: "Exit date must be on or after entry date.",
