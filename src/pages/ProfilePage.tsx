@@ -114,14 +114,14 @@ export default function ProfilePage() {
       <Separator />
 
       <Card>
-        <CardContent className="py-4 flex items-center justify-between">
+        <CardContent className="py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-medium">Sign out</p>
             <p className="text-sm text-muted-foreground">
               Sign out of your account on this device
             </p>
           </div>
-          <Button variant="destructive" onClick={signOut}>
+          <Button variant="destructive" className="w-full sm:w-auto" onClick={signOut}>
             <LogOut className="h-4 w-4 mr-1" />
             Sign out
           </Button>

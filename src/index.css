@@ -86,4 +86,14 @@ body {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* iOS safe area utilities */
+@utility safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility safe-bottom {
+  bottom: env(safe-area-inset-bottom, 0px);
 }

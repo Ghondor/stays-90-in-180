@@ -38,28 +38,33 @@ export function CountryCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between font-normal"
+          className="w-full justify-between font-normal h-10"
         >
           {selected ? (
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 truncate">
               <img
                 src={flagUrl(selected.code)}
                 alt=""
-                className="h-4 w-5 rounded-sm object-cover"
+                className="h-4 w-5 shrink-0 rounded-sm object-cover"
                 loading="lazy"
               />
-              {selected.name}
+              <span className="truncate">{selected.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{placeholder}</span>
+            <span className="text-muted-foreground truncate">{placeholder}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
+      <PopoverContent
+        className="w-(--radix-popover-trigger-width) p-0"
+        align="start"
+        side="bottom"
+        avoidCollisions
+      >
         <Command>
           <CommandInput placeholder="Search countries..." />
-          <CommandList>
+          <CommandList className="max-h-[min(300px,50dvh)]">
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup>
               {COUNTRIES.map((c) => (
@@ -70,18 +75,18 @@ export function CountryCombobox({
                     onChange(c.code === value ? "" : c.code);
                     setOpen(false);
                   }}
-                  className="cursor-pointer"
+                  className="cursor-pointer min-h-[40px]"
                 >
                   <img
                     src={flagUrl(c.code)}
                     alt=""
-                    className="h-4 w-5 rounded-sm object-cover"
+                    className="h-4 w-5 shrink-0 rounded-sm object-cover"
                     loading="lazy"
                   />
-                  <span className="flex-1">{c.name}</span>
+                  <span className="flex-1 truncate">{c.name}</span>
                   <Check
                     className={cn(
-                      "h-4 w-4",
+                      "h-4 w-4 shrink-0",
                       value === c.code ? "opacity-100" : "opacity-0"
                     )}
                   />

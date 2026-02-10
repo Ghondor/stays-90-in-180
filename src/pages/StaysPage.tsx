@@ -54,8 +54,9 @@ export default function StaysPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">My Stays</h1>
           <p className="text-sm text-muted-foreground">
@@ -63,17 +64,18 @@ export default function StaysPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={exportCsv}>
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={exportCsv}>
             <Download className="h-4 w-4 mr-1" />
-            Export CSV
+            Export
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="flex-1 sm:flex-none"
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="h-4 w-4 mr-1" />
-            Import CSV
+            Import
           </Button>
           <input
             ref={fileInputRef}
@@ -115,23 +117,16 @@ export default function StaysPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Country</TableHead>
-                <TableHead>Entry</TableHead>
-                <TableHead>Exit</TableHead>
-                <TableHead className="w-[100px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((s) => {
-                const c = getCountryByCode(s.country);
-                return (
-                  <TableRow key={s.id}>
-                    <TableCell className="font-medium">
-                      <span className="flex items-center gap-2">
+        <>
+          {/* Mobile: Card layout */}
+          <div className="space-y-3 sm:hidden">
+            {filtered.map((s) => {
+              const c = getCountryByCode(s.country);
+              return (
+                <Card key={s.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 font-medium">
                         <img
                           src={flagUrl(s.country)}
                           alt=""
@@ -139,35 +134,96 @@ export default function StaysPage() {
                         />
                         {c?.name ?? s.country}
                       </span>
-                    </TableCell>
-                    <TableCell>{formatDisplayDate(s.entryDate)}</TableCell>
-                    <TableCell>{formatDisplayDate(s.exitDate)}</TableCell>
-                    <TableCell>
                       <div className="flex gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-9 w-9 text-muted-foreground hover:text-foreground"
                           onClick={() => openEdit(s)}
-                          className="text-muted-foreground hover:text-foreground"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-9 w-9 text-muted-foreground hover:text-destructive"
                           onClick={() => removeSt(s.id)}
-                          className="text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                    </div>
+                    <div className="mt-2 flex gap-4 text-sm text-muted-foreground">
+                      <div>
+                        <span className="text-xs uppercase tracking-wide">Entry</span>
+                        <p className="text-foreground">{formatDisplayDate(s.entryDate)}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs uppercase tracking-wide">Exit</span>
+                        <p className="text-foreground">{formatDisplayDate(s.exitDate)}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Desktop: Table layout */}
+          <div className="hidden sm:block rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Country</TableHead>
+                  <TableHead>Entry</TableHead>
+                  <TableHead>Exit</TableHead>
+                  <TableHead className="w-[100px]" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((s) => {
+                  const c = getCountryByCode(s.country);
+                  return (
+                    <TableRow key={s.id}>
+                      <TableCell className="font-medium">
+                        <span className="flex items-center gap-2">
+                          <img
+                            src={flagUrl(s.country)}
+                            alt=""
+                            className="h-4 w-5 rounded-sm object-cover"
+                          />
+                          {c?.name ?? s.country}
+                        </span>
+                      </TableCell>
+                      <TableCell>{formatDisplayDate(s.entryDate)}</TableCell>
+                      <TableCell>{formatDisplayDate(s.exitDate)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEdit(s)}
+                            className="text-muted-foreground hover:text-foreground"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeSt(s.id)}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
     </div>
   );

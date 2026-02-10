@@ -35,7 +35,7 @@ export function AppLayout() {
 
   return (
     <ModalContext.Provider value={{ openAdd, openEdit }}>
-      <div className="flex h-screen">
+      <div className="flex h-dvh">
         <Sidebar />
 
         <div className="flex flex-1 flex-col overflow-hidden">
@@ -43,7 +43,7 @@ export function AppLayout() {
           <header className="flex items-center justify-between border-b px-4 py-3 md:px-6">
             <h2 className="text-lg font-semibold md:hidden">90-in-180</h2>
             <div className="hidden md:block" />
-            <Button size="sm" onClick={openAdd}>
+            <Button size="sm" className="h-10 sm:h-9" onClick={openAdd}>
               <Plus className="h-4 w-4 mr-1" />
               Add stay
             </Button>

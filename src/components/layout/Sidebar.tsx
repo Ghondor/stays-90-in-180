@@ -54,7 +54,7 @@ export function Sidebar() {
       </aside>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t bg-sidebar md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t bg-sidebar md:hidden safe-pb">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
@@ -62,7 +62,7 @@ export function Sidebar() {
             end={item.to === "/"}
             className={({ isActive }) =>
               cn(
-                "flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium transition-colors",
+                "flex flex-1 flex-col items-center justify-center gap-1 min-h-[52px] py-2 text-xs font-medium transition-colors",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -75,7 +75,7 @@ export function Sidebar() {
         ))}
         <button
           onClick={signOut}
-          className="flex flex-1 flex-col items-center gap-1 py-2 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+          className="flex flex-1 flex-col items-center justify-center gap-1 min-h-[52px] py-2 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           Sign out
