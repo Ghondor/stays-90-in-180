@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format, parseISO } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import {
   Dialog,
   DialogContent,
@@ -13,20 +14,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CountryCombobox } from "@/components/CountryCombobox";
-import { DatePicker } from "@/components/DatePicker";
-import { useStays } from "@/context/StaysContext";
+import { DateRangePicker } from "@/components/DateRangePicker";
+import { useStays } from "@/hooks/useStays";
 import type { Stay } from "@/lib/rule90-180";
 
-const staySchema = z
-  .object({
-    country: z.string().min(1, "Please select a country."),
-    entryDate: z.date({ error: "Please pick an entry date." }),
-    exitDate: z.date({ error: "Please pick an exit date." }),
-  })
-  .refine((data) => data.exitDate >= data.entryDate, {
-    message: "Exit date must be on or after entry date.",
-    path: ["exitDate"],
-  });
+const staySchema = z.object({
+  country: z.string().min(1, "Please select a country."),
+  dateRange: z
+    .object({
+      from: z.date({ error: "Please pick an entry date." }),
+      to: z.date({ error: "Please pick an exit date." }),
+    })
+    .refine((r) => r.to >= r.from, {
+      message: "Exit date must be on or after entry date.",
+      path: ["to"],
+    }),
+});
 
 type StayFormValues = z.infer<typeof staySchema>;
 
@@ -49,7 +52,10 @@ export function StayModal({ open, onOpenChange, editingStay }: StayModalProps) {
     formState: { errors },
   } = useForm<StayFormValues>({
     resolver: zodResolver(staySchema),
-    defaultValues: { country: "", entryDate: undefined, exitDate: undefined },
+    defaultValues: {
+      country: "",
+      dateRange: { from: undefined as unknown as Date, to: undefined as unknown as Date },
+    },
   });
 
   // When the modal opens with an editing stay, populate the form
@@ -57,11 +63,16 @@ export function StayModal({ open, onOpenChange, editingStay }: StayModalProps) {
     if (open && editingStay) {
       reset({
         country: editingStay.country,
-        entryDate: parseISO(editingStay.entryDate),
-        exitDate: parseISO(editingStay.exitDate),
+        dateRange: {
+          from: parseISO(editingStay.entryDate),
+          to: parseISO(editingStay.exitDate),
+        },
       });
     } else if (open && !editingStay) {
-      reset({ country: "", entryDate: undefined, exitDate: undefined });
+      reset({
+        country: "",
+        dateRange: { from: undefined as unknown as Date, to: undefined as unknown as Date },
+      });
     }
   }, [open, editingStay, reset]);
 
@@ -70,8 +81,8 @@ export function StayModal({ open, onOpenChange, editingStay }: StayModalProps) {
     try {
       const fields = {
         country: data.country,
-        entryDate: format(data.entryDate, "yyyy-MM-dd"),
-        exitDate: format(data.exitDate, "yyyy-MM-dd"),
+        entryDate: format(data.dateRange.from, "yyyy-MM-dd"),
+        exitDate: format(data.dateRange.to, "yyyy-MM-dd"),
       };
 
       if (isEdit) {
@@ -87,6 +98,12 @@ export function StayModal({ open, onOpenChange, editingStay }: StayModalProps) {
       setSubmitting(false);
     }
   };
+
+  // Extract nested error for dateRange
+  const dateRangeError =
+    errors.dateRange?.message ||
+    errors.dateRange?.from?.message ||
+    errors.dateRange?.to?.message;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,38 +133,25 @@ export function StayModal({ open, onOpenChange, editingStay }: StayModalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>Entry date</Label>
+            <Label>Stay dates</Label>
             <Controller
-              name="entryDate"
+              name="dateRange"
               control={control}
               render={({ field }) => (
-                <DatePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Entry date"
+                <DateRangePicker
+                  value={field.value as DateRange | undefined}
+                  onChange={(range) => {
+                    field.onChange({
+                      from: range?.from,
+                      to: range?.to,
+                    });
+                  }}
+                  placeholder="Select entry & exit dates"
                 />
               )}
             />
-            {errors.entryDate && (
-              <p className="text-sm text-destructive">{errors.entryDate.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label>Exit date</Label>
-            <Controller
-              name="exitDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Exit date"
-                />
-              )}
-            />
-            {errors.exitDate && (
-              <p className="text-sm text-destructive">{errors.exitDate.message}</p>
+            {dateRangeError && (
+              <p className="text-sm text-destructive">{dateRangeError}</p>
             )}
           </div>
 

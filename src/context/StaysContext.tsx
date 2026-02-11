@@ -1,6 +1,4 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
   useMemo,
@@ -9,7 +7,7 @@ import {
 } from "react";
 import type { Stay } from "@/lib/rule90-180";
 import { wouldOverstay } from "@/lib/rule90-180";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   fetchStays,
   insertStay,
@@ -19,19 +17,7 @@ import {
 } from "@/lib/stays-db";
 import { parseCsvToStays, staysToCsv } from "@/lib/csv";
 import { todayLocal } from "@/lib/rule90-180";
-
-interface StaysState {
-  stays: Stay[];
-  loading: boolean;
-  addStay: (stay: Omit<Stay, "id">) => Promise<void>;
-  editStay: (id: string, fields: Omit<Stay, "id">) => Promise<void>;
-  removeSt: (id: string) => Promise<void>;
-  importCsv: (text: string) => Promise<string[]>;
-  exportCsv: () => void;
-  countryCodes: string[];
-}
-
-const StaysContext = createContext<StaysState | undefined>(undefined);
+import { StaysContext } from "@/context/staysContextValue";
 
 export function StaysProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -130,10 +116,4 @@ export function StaysProvider({ children }: { children: ReactNode }) {
       {children}
     </StaysContext.Provider>
   );
-}
-
-export function useStays(): StaysState {
-  const ctx = useContext(StaysContext);
-  if (!ctx) throw new Error("useStays must be used within a StaysProvider");
-  return ctx;
 }

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 import { BarChart3, List, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [

@@ -1,7 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { StaysProvider } from "@/context/StaysContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import AuthPage from "@/components/AuthPage";

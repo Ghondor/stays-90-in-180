@@ -79,11 +79,15 @@ export async function updateStay(
     .from("stays")
     .update(update)
     .eq("id", stayId)
-    .select()
-    .single();
+    .select();
 
   if (error) throw new Error(error.message);
-  return rowToStay(data as StayRow);
+  if (!data || data.length === 0) {
+    throw new Error(
+      "Update failed — no rows returned. Please ensure the UPDATE RLS policy exists on the stays table."
+    );
+  }
+  return rowToStay(data[0] as StayRow);
 }
 
 /**

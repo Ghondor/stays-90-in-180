@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +53,28 @@ export function CountryCombobox({
           ) : (
             <span className="text-muted-foreground truncate">{placeholder}</span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {selected ? (
+            <span
+              role="button"
+              aria-label="Clear selection"
+              className="ml-2 shrink-0 rounded-sm opacity-50 hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                  onChange("");
+                }
+              }}
+              tabIndex={0}
+            >
+              <X className="h-4 w-4" />
+            </span>
+          ) : (
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent

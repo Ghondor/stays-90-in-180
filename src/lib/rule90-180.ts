@@ -1,3 +1,5 @@
+import { isSchengen, ZONE_SCHENGEN } from "@/lib/zones";
+
 export interface Stay {
   id: string;
   country: string;
@@ -69,18 +71,30 @@ export function daysInWindow(stays: Stay[], windowEnd: string): number {
 }
 
 /**
- * Days used in the 180-day window ending on asOfDate (default today), for the given country.
+ * Filter stays matching a country-or-zone identifier.
+ * - If countryOrZone is ZONE_SCHENGEN, returns stays in any Schengen member state.
+ * - Otherwise matches a single country code (case-insensitive).
+ */
+function filterStays(stays: Stay[], countryOrZone: string): Stay[] {
+  if (countryOrZone === ZONE_SCHENGEN) {
+    return stays.filter((s) => isSchengen(s.country));
+  }
+  return stays.filter(
+    (s) => s.country.toLowerCase().trim() === countryOrZone.toLowerCase().trim()
+  );
+}
+
+/**
+ * Days used in the 180-day window ending on asOfDate (default today), for the given country or zone.
  */
 export function daysUsedToday(
   stays: Stay[],
-  country: string,
+  countryOrZone: string,
   asOfDate?: string
 ): number {
   const date = asOfDate ?? todayLocal();
-  const byCountry = stays.filter(
-    (s) => s.country.toLowerCase().trim() === country.toLowerCase().trim()
-  );
-  return daysInWindow(byCountry, date);
+  const filtered = filterStays(stays, countryOrZone);
+  return daysInWindow(filtered, date);
 }
 
 /**
@@ -88,10 +102,10 @@ export function daysUsedToday(
  */
 export function daysRemaining(
   stays: Stay[],
-  country: string,
+  countryOrZone: string,
   asOfDate?: string
 ): number {
-  const used = daysUsedToday(stays, country, asOfDate);
+  const used = daysUsedToday(stays, countryOrZone, asOfDate);
   return Math.max(0, 90 - used);
 }
 
@@ -101,52 +115,48 @@ export function daysRemaining(
  */
 export function nextPossibleEntry(
   stays: Stay[],
-  country: string,
+  countryOrZone: string,
   afterDate: string
 ): string | null {
-  const byCountry = stays.filter(
-    (s) => s.country.toLowerCase().trim() === country.toLowerCase().trim()
-  );
+  const filtered = filterStays(stays, countryOrZone);
   const after = parseDate(afterDate);
-  const usedOnAfter = daysInWindow(byCountry, afterDate);
+  const usedOnAfter = daysInWindow(filtered, afterDate);
   if (usedOnAfter < 90) return afterDate;
 
   // Iterate day by day until we find a date when usage drops below 90
   const maxIterations = 365;
-  let d = new Date(after);
+  const d = new Date(after);
   for (let i = 0; i < maxIterations; i++) {
     d.setDate(d.getDate() + 1);
     const dateStr = formatDate(d);
-    const used = daysInWindow(byCountry, dateStr);
+    const used = daysInWindow(filtered, dateStr);
     if (used < 90) return dateStr;
   }
   return null;
 }
 
 /**
- * Check if adding this stay would cause overstay for the given country.
+ * Check if adding this stay would cause overstay for the given country or zone.
  * Returns true if for any day in [entry, exit] the 180-day window ending that day would exceed 90 days.
  */
 export function wouldOverstay(
   existingStays: Stay[],
-  country: string,
+  countryOrZone: string,
   entryDate: string,
   exitDate: string
 ): boolean {
-  const byCountry = existingStays.filter(
-    (s) => s.country.toLowerCase().trim() === country.toLowerCase().trim()
-  );
+  const filtered = filterStays(existingStays, countryOrZone);
   const entry = parseDate(entryDate);
   const exit = parseDate(exitDate);
   const candidate: Stay = {
     id: "",
-    country,
+    country: countryOrZone,
     entryDate,
     exitDate,
   };
-  const withNew = [...byCountry, candidate];
+  const withNew = [...filtered, candidate];
 
-  let d = new Date(entry);
+  const d = new Date(entry);
   const endOrd = toDayOrdinal(exit);
   while (toDayOrdinal(d) <= endOrd) {
     const dateStr = formatDate(d);
@@ -157,23 +167,30 @@ export function wouldOverstay(
 }
 
 /**
- * Whether the current set of stays for the country ever exceeds 90 days in any 180-day window.
+ * Whether the current set of stays for the country/zone ever exceeds 90 days in any 180-day window.
  */
-export function hasOverstay(stays: Stay[], country: string): boolean {
-  const byCountry = stays.filter(
-    (s) => s.country.toLowerCase().trim() === country.toLowerCase().trim()
-  );
-  if (byCountry.length === 0) return false;
-  const entries = byCountry.map((s) => parseDate(s.entryDate));
-  const exits = byCountry.map((s) => parseDate(s.exitDate));
+export function hasOverstay(stays: Stay[], countryOrZone: string): boolean {
+  const filtered = filterStays(stays, countryOrZone);
+  if (filtered.length === 0) return false;
+  const entries = filtered.map((s) => parseDate(s.entryDate));
+  const exits = filtered.map((s) => parseDate(s.exitDate));
   const minDate = new Date(Math.min(...entries.map((d) => d.getTime())));
   const maxDate = new Date(Math.max(...exits.map((d) => d.getTime())));
-  let d = new Date(minDate);
+  const d = new Date(minDate);
   const maxOrd = toDayOrdinal(maxDate);
   while (toDayOrdinal(d) <= maxOrd) {
     const dateStr = formatDate(d);
-    if (daysInWindow(byCountry, dateStr) > 90) return true;
+    if (daysInWindow(filtered, dateStr) > 90) return true;
     d.setDate(d.getDate() + 1);
   }
   return false;
+}
+
+/**
+ * Duration of a stay in days (inclusive of both entry and exit day).
+ */
+export function stayDuration(entryDate: string, exitDate: string): number {
+  const entry = parseDate(entryDate);
+  const exit = parseDate(exitDate);
+  return toDayOrdinal(exit) - toDayOrdinal(entry) + 1;
 }

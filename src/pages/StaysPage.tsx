@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
-import { useStays } from "@/context/StaysContext";
+import { useStays } from "@/hooks/useStays";
 import { getCountryByCode, flagUrl } from "@/lib/countries";
+import { stayDuration } from "@/lib/rule90-180";
 import { CountryCombobox } from "@/components/CountryCombobox";
 import { Button } from "@/components/ui/button";
 import {
@@ -162,6 +163,10 @@ export default function StaysPage() {
                         <span className="text-xs uppercase tracking-wide">Exit</span>
                         <p className="text-foreground">{formatDisplayDate(s.exitDate)}</p>
                       </div>
+                      <div>
+                        <span className="text-xs uppercase tracking-wide">Days</span>
+                        <p className="text-foreground font-medium">{stayDuration(s.entryDate, s.exitDate)}</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -177,6 +182,7 @@ export default function StaysPage() {
                   <TableHead>Country</TableHead>
                   <TableHead>Entry</TableHead>
                   <TableHead>Exit</TableHead>
+                  <TableHead className="text-right">Days</TableHead>
                   <TableHead className="w-[100px]" />
                 </TableRow>
               </TableHeader>
@@ -197,6 +203,7 @@ export default function StaysPage() {
                       </TableCell>
                       <TableCell>{formatDisplayDate(s.entryDate)}</TableCell>
                       <TableCell>{formatDisplayDate(s.exitDate)}</TableCell>
+                      <TableCell className="text-right font-medium">{stayDuration(s.entryDate, s.exitDate)}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button
