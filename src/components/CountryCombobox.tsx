@@ -32,7 +32,7 @@ export function CountryCombobox({
   const selected = value ? getCountryByCode(value) : null;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
