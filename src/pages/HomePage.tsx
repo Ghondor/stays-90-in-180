@@ -444,7 +444,8 @@ export default function HomePage() {
                 <CardContent>
                   <ChartContainer
                     config={barChartConfig}
-                    className="min-h-[250px] w-full"
+                    className="aspect-auto w-full"
+                    style={{ height: Math.max(150, barData.length * 50) }}
                   >
                     <BarChart
                       accessibilityLayer
@@ -458,8 +459,11 @@ export default function HomePage() {
                         type="category"
                         tickLine={false}
                         axisLine={false}
-                        width={100}
-                        fontSize={12}
+                        width={80}
+                        fontSize={11}
+                        tickFormatter={(v: string) =>
+                          v.length > 10 ? v.slice(0, 10) + "…" : v
+                        }
                       />
                       <XAxis type="number" hide />
                       <ChartTooltip
@@ -495,7 +499,7 @@ export default function HomePage() {
                 <CardContent className="flex items-center justify-center">
                   <ChartContainer
                     config={gaugeChartConfig}
-                    className="min-h-[250px] w-full max-w-[300px]"
+                    className="aspect-square w-full max-w-[250px]"
                   >
                     <RadialBarChart
                       data={[
@@ -564,7 +568,7 @@ export default function HomePage() {
               <CardContent>
                 <ChartContainer
                   config={timelineChartConfig}
-                  className="min-h-[250px] w-full"
+                  className="aspect-auto h-[250px] w-full sm:aspect-video sm:h-auto"
                 >
                   <AreaChart
                     accessibilityLayer
