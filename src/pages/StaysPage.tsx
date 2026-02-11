@@ -57,7 +57,7 @@ export default function StaysPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">My Stays</h1>
           <p className="text-sm text-muted-foreground">
@@ -65,14 +65,26 @@ export default function StaysPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={exportCsv}>
+          <Button variant="outline" size="icon" className="h-9 w-9 sm:hidden" onClick={exportCsv} aria-label="Export CSV">
+            <Download className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 sm:hidden"
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Import CSV"
+          >
+            <Upload className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm" className="hidden sm:inline-flex" onClick={exportCsv}>
             <Download className="h-4 w-4 mr-1" />
             Export
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 sm:flex-none"
+            className="hidden sm:inline-flex"
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="h-4 w-4 mr-1" />
@@ -120,14 +132,16 @@ export default function StaysPage() {
       ) : (
         <>
           {/* Mobile: Card layout */}
-          <div className="space-y-3 sm:hidden">
+          <div className="space-y-2.5 sm:hidden">
             {filtered.map((s) => {
               const c = getCountryByCode(s.country);
+              const days = stayDuration(s.entryDate, s.exitDate);
               return (
-                <Card key={s.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2 font-medium">
+                <Card key={s.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    {/* Top row: country + actions */}
+                    <div className="flex items-center justify-between px-3.5 pt-3 pb-2">
+                      <span className="flex items-center gap-2 font-medium text-sm">
                         <img
                           src={flagUrl(s.country)}
                           alt=""
@@ -135,38 +149,38 @@ export default function StaysPage() {
                         />
                         {c?.name ?? s.country}
                       </span>
-                      <div className="flex gap-1">
+                      <div className="flex gap-0.5 -mr-1.5">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 text-muted-foreground hover:text-foreground"
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground"
                           onClick={() => openEdit(s)}
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() => removeSt(s.id)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
-                    <div className="mt-2 flex gap-4 text-sm text-muted-foreground">
-                      <div>
-                        <span className="text-xs uppercase tracking-wide">Entry</span>
-                        <p className="text-foreground">{formatDisplayDate(s.entryDate)}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide">Exit</span>
-                        <p className="text-foreground">{formatDisplayDate(s.exitDate)}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide">Days</span>
-                        <p className="text-foreground font-medium">{stayDuration(s.entryDate, s.exitDate)}</p>
-                      </div>
+
+                    {/* Bottom row: dates + days badge */}
+                    <div className="flex items-center gap-3 px-3.5 pb-3 text-xs text-muted-foreground">
+                      <span className="text-foreground">
+                        {formatDisplayDate(s.entryDate)}
+                      </span>
+                      <span className="text-muted-foreground/60">&rarr;</span>
+                      <span className="text-foreground">
+                        {formatDisplayDate(s.exitDate)}
+                      </span>
+                      <span className="ml-auto inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                        {days}d
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
